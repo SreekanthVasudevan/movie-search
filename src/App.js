@@ -4,13 +4,25 @@ import SearchIcon from "./search.svg";
 import MovieCard from "./MovieCard";
 const API_URL = "http://www.omdbapi.com/?i=tt3896198&apikey=5f878882";
 
+
 const App = () => {
   const [movies, setMovies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const searchMovies = async (title) => {
-    const response = await fetch(`${API_URL}&s=${title}`);
-    const data = await response.json();
-    setMovies(data.Search);
+    try {
+      const response = await fetch(`${API_URL}&s=${title}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.Response === "True") {
+        setMovies(data.Search);
+      } else {
+        setMovies([]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
   };
   const movie1 = {
     Title: "Spiderman",
@@ -21,7 +33,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    searchMovies("movie"); // Correct function call
+    searchMovies("movie"); 
   }, []);
 
   return (
